@@ -1,0 +1,137 @@
+'\" e
+.\" SuSE man page for startpar
+.\"
+.\" Copyright (c) 2003 SuSE Linux AG, Nuernberg, Germany.
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2, or (at your option)
+.\" any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program (see the file COPYING); if not, write to the
+.\" Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+.\" MA 02110-1301, USA.
+.\"
+.\" Author: Michael Schroeder <mls@suse.de>
+.\"
+.TH STARTPAR 8 "Jun 2003"
+.SH NAME
+startpar \- start runlevel scripts in parallel
+
+.SH SYNOPSIS
+.B startpar
+.RB [ \-p
+.IR par ]
+.RB [ \-i
+.IR iorate ]
+.RB [ \-t
+.IR timeout ]
+.RB [ \-T
+.IR global_timeout ]
+.RB [ \-a
+.IR arg ]
+.B prg1
+.B prg2
+.B ...
+.br
+.B startpar
+.RB [ \-p
+.IR par ]
+.RB [ \-i
+.IR iorate ]
+.RB [ \-t
+.IR timeout ]
+.RB [ \-T
+.IR global_timeout ]
+.B \-M [
+.IR boot | start | stop ]
+
+.SH DESCRIPTION
+startpar is used to run multiple run\-level scripts in parallel.
+The degree of parallelism on one
+.B CPU
+can be set with the
+.B \-p
+option, the default is full parallelism. An argument to all of
+the scripts can be provided with the
+.B \-a
+option.
+Processes blocked by pending
+.B I/O
+will cause new process creation to be weighted by the iorate factor
+.IR 800 .
+To change this factor the option
+.B \-i
+can be used to specify another value.  The amount
+.EQ
+weight = (nblocked times iorate) / 1000
+.EN
+will be subtracted from the total number of processes which could be
+started, where nblocked is the number of processes currently blocked
+by pending I/O.
+
+The output of each script is buffered and written when the script
+exits, so output lines of different scripts won't mix. You can
+modify this behaviour by setting a timeout.
+
+The timeout set with the
+.B \-t
+option is used as buffer timeout. If the output buffer of a
+script is not empty and the last output was
+.I timeout
+seconds ago, startpar will flush the buffer.
+
+The
+.B \-T
+option timeout works more globally. If no output is printed for
+more than
+.I global_timeout
+seconds, startpar will flush the buffer of the script with
+the oldest output. Afterwards it will only print output of this
+script until it is finished.
+
+The
+.B \-M
+option switches
+.B startpar
+into a
+.BR make (1)
+like behaviour.  This option takes three different arguments:
+.IR boot ", " start ", and " stop
+for reading
+.IR .depend.boot " or " .depend.start " or " .depend.stop
+respectively in the directory
+.IR /etc/init.d/ .
+By scanning the boot and runlevel directories in
+.I /etc/init.d/
+it then executes the appropriate scripts in parallel.
+
+.SH FILES
+.I /etc/init.d/.depend.boot
+.br
+.I /etc/init.d/.depend.start
+.br
+.I /etc/init.d/.depend.stop
+
+.SH SEE ALSO
+.BR init.d (7),
+.BR insserv (8),
+.BR startproc (8).
+
+.SH COPYRIGHT
+2003,2004 SuSE Linux AG, Nuernberg, Germany.
+.br
+2007 SuSE LINUX Products GmbH, Nuernberg, Germany.
+
+.SH AUTHOR
+Michael Schroeder <mls@suse.de>
+.br
+Takashi Iwai <tiwai@suse.de>
+.br
+Werner Fink <werner@suse.de>
