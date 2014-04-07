@@ -38,6 +38,9 @@ install: startpar
 	$(INSTALL) startpar $(DESTDIR)$(sbindir)/.
 	$(INSTALL_DATA) startpar.8 $(DESTDIR)$(man8dir)/.
 
+check:
+	$(MAKE) -C testsuite $@
+
 clean:
 	rm -f startpar makeboot $(OBJS)
 
