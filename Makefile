@@ -28,6 +28,7 @@ endif
 .c.o:
 	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -c $<
 
+all: startpar
 startpar: $(OBJS)
 	$(CC) $(CFLAGS) $(LDFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -o $@ $(OBJS) $(LIBS)
 
