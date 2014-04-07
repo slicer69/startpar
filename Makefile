@@ -21,6 +21,9 @@ endif
 CC     = gcc
 CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -Wall -W -pipe
 
+# Enable large file support on GNU/Hurd
+CFLAGS += $(shell getconf LFS_CFLAGS)
+
 ifeq ($(MAKECMDGOALS),makeboot)
 CFLAGS += -DTEST
 endif
