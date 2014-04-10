@@ -1,5 +1,5 @@
 VERSION = 0.59
-ISSUSE	= -DSUSE
+#ISSUSE	= -DSUSE
 
 INSTALL		= install -m 755
 INSTALL_DATA	= install -m 644
