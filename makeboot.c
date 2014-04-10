@@ -304,9 +304,9 @@ static void filter_files(const char *dir, int prefix, int inverse)
 
 	filter_prefix = prefix;
 #ifdef SUSE	/* SuSE */
-	snprintf(path, sizeof(path), "/etc/init.d/%s.d", dir);
+	snprintf(path, sizeof(path), "%s/%s.d", initddir, dir);
 #else		/* Debian */
-	snprintf(path, sizeof(path), "/etc/%s.d", dir);
+	snprintf(path, sizeof(path), "%s/%s.d", etcdir, dir);
 #endif
 #if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 600
 	if ((i = open(path, o_flags|O_DIRECTORY|O_LARGEFILE)) >= 0) {
@@ -438,7 +438,7 @@ struct makenode *pickup_task(void)
 #if defined _XOPEN_SOURCE && (_XOPEN_SOURCE - 0) >= 600
 		char path[128];
 		int fd;
-		snprintf(path, sizeof(path), "/etc/init.d/%s", best->name);
+		snprintf(path, sizeof(path), "%s/%s", initddir, best->name);
 		if ((fd = open(path, o_flags|O_DIRECT)) >= 0) {
 			(void)posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
 			(void)posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
@@ -467,7 +467,7 @@ void finish_task(struct makenode *node)
 	{
 		char path[128];
 		int fd;
-		snprintf(path, sizeof(path), "/etc/init.d/%s", node->name);
+		snprintf(path, sizeof(path), "%s/%s", initddir, node->name);
 		if ((fd = open(path, o_flags|O_DIRECT)) >= 0) {
 			(void)posix_fadvise(fd, 0, 0, POSIX_FADV_DONTNEED);
 			close(fd);

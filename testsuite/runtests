@@ -1,0 +1,33 @@
+#!/bin/sh
+
+mkdir -p etc/init.d
+touch etc/insserv.conf
+cat > etc/init.d/test <<EOF
+#!/bin/sh
+set -e
+### BEGIN INIT INFO
+# Provides:          stop-readahead-fedora
+# Required-Start:    $all
+# Required-Stop:     $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: init script for stopping readahead profiling
+### END INIT INFO
+
+echo success: the test script is running $1
+EOF
+chmod a+rx etc/init.d/test
+
+/sbin/insserv -p etc/init.d test
+../startpar -d etc/init.d -e etc -P S -R 2 -M start
+
+rm -rf etc
+
+
+mkdir -p start
+touch start/working
+if ../startpar -a start ls 2>&1 | grep -q working ; then
+    echo success: the ls command was running
+else
+    echo error: the ls command was not running
+fi ; rm -rf start

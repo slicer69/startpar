@@ -46,6 +46,8 @@ struct makelist {
 
 extern int tree_entries;
 extern struct makenode *tree_list;
+extern const char *initddir;
+extern const char *etcdir;
 
 extern void parse_makefile(const char *path);
 extern void check_run_files(const char *action, const char *prev, const char *run);

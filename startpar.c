@@ -100,6 +100,8 @@ static struct timeval lastlim;
 static char *run_mode = NULL;
 static struct makenode **nodevec;
 static sig_atomic_t signaled;
+const char *initddir = "/etc/init.d";
+const char *etcdir = "/etc";
 
 #define PBUF_SIZE	8192
 #define PRUNNING	0x0001
@@ -550,7 +552,7 @@ void run(struct prg *p)
   if (run_mode)
     {
       char path[128];
-      snprintf(path, sizeof(path), "/etc/init.d/%s", p->name);
+      snprintf(path, sizeof(path), "%s/%s", initddir, p->name);
       execlp(path, p->arg0, arg, (char *)0);
     }
   else if (arg)
@@ -594,7 +596,7 @@ int run_single(const char *prg, const char *arg0, int spl)
       if (run_mode)
 	{
 	  char path[128];
-	  snprintf(path, sizeof(path), "/etc/init.d/%s", prg);
+	  snprintf(path, sizeof(path), "%s/%s", initddir, prg);
 	  execlp(path, arg0 ? arg0 : path, arg, (char *)0);
 	}
       else if (arg)
@@ -853,7 +855,7 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:")) != EOF)
+  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
     {
       switch(c)
         {
@@ -871,6 +873,12 @@ int main(int argc, char **argv)
 	  break;
 	case 'a':
 	  arg = optarg;
+	  break;
+	case 'e':
+	  etcdir = optarg;
+	  break;
+	case 'd':
+	  initddir = optarg;
 	  break;
 	case 'M':
 	  run_mode = optarg;
@@ -943,7 +951,7 @@ int main(int argc, char **argv)
 	  fprintf(stderr, "invalid run mode %s\n", run_mode);
 	  exit(1);
 	}
-      snprintf(makefile, sizeof(makefile), "/etc/init.d/.depend.%s", run_mode);
+      snprintf(makefile, sizeof(makefile), "%s/.depend.%s", initddir, run_mode);
       parse_makefile(makefile);
       check_run_files(run_mode, prev_level, run_level);
 
