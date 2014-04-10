@@ -78,8 +78,6 @@
 # define attribute(attr)	__attribute__(attr)
 #endif
 
-#define timerdiff(n,l) (extension({ (((n).tv_sec-(l).tv_sec)*1000)+(((n).tv_usec-(l).tv_usec)/1000); }))
-
 typedef enum _boolean {false, true} boolean;
 extern char *optarg;
 extern int optind;
@@ -804,6 +802,11 @@ static void sigwinch(int sig attribute((unused)))
   snprintf(sz.env_row, sizeof(sz.env_row), "LINES=%d",   wz.ws_row);
   snprintf(sz.env_col, sizeof(sz.env_col), "COLUMNS=%d", wz.ws_col);
   kill(-1, SIGWINCH);
+}
+
+static long timerdiff(const struct timeval n,const struct timeval l)
+{
+    return (((n).tv_sec-(l).tv_sec)*1000)+(((n).tv_usec-(l).tv_usec)/1000);
 }
 
 void usage(int status)
