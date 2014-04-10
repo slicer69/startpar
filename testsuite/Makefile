@@ -1,4 +1,6 @@
+STARTPAR = ../startpar
+
 all:
 
 check:
-	./runtests
+	STARTPAR=$(STARTPAR) ./runtests

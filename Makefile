@@ -13,6 +13,8 @@ HDRS		= makeboot.h proc.h
 REST		= COPYING Makefile startpar.8
 OBJS		= $(SRCS:.c=.o)
 
+STARTPAR        := $(shell pwd)/startpar
+
 ifneq ($(INC),)
     LIBS	+= -lblogger
     COPTS	+= -DUSE_BLOGD
@@ -43,7 +45,7 @@ install: startpar
 	$(INSTALL_DATA) startpar.8 $(DESTDIR)$(man8dir)/.
 
 check:
-	$(MAKE) -C testsuite $@
+	$(MAKE) STARTPAR=$(STARTPAR) -C testsuite $@
 
 distclean: clean
 clean:
