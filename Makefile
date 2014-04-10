@@ -44,17 +44,49 @@ install: startpar
 	$(INSTALL) startpar $(DESTDIR)$(sbindir)/.
 	$(INSTALL_DATA) startpar.8 $(DESTDIR)$(man8dir)/.
 
-check:
+check: all
 	$(MAKE) STARTPAR=$(STARTPAR) -C testsuite $@
 
 distclean: clean
 clean:
 	rm -f startpar makeboot $(OBJS)
 
-dest: clean
-	mkdir -p startpar-$(VERSION)
-	for file in $(SRCS) $(HDRS) $(REST) ; do \
-	    cp -p $$file startpar-$(VERSION)/; \
-	done
-	tar -cps -jf startpar-$(VERSION).tar.bz2 startpar-$(VERSION)/*
-	rm -rf startpar-$(VERSION)/
+ifeq ($(MAKECMDGOALS),upload)
+PACKAGE=startpar
+PROJECT=sysvinit
+SVLOGIN=$(shell svn info | sed -rn '/Repository Root:/{ s|.*//(.*)\@.*|\1|p }')
+override TMP:=$(shell mktemp -d $(VERSION).XXXXXXXX)
+override TARBALL:=$(TMP)/$(PACKAGE)-$(VERSION).tar.bz2
+override SFTPBATCH:=$(TMP)/$(VERSION)-sftpbatch
+
+dist: $(TARBALL) $(TARBALL).sig
+	@cp $(TARBALL) .
+	@cp $(TARBALL).sig .
+	@echo "tarball $(PACKAGE)-$(VERSION).tar.bz2 ready"
+	rm -rf $(TMP)
+
+upload: $(SFTPBATCH)
+	echo @sftp -b $< $(SVLOGIN)@dl.sv.nongnu.org:/releases/$(PROJECT)
+	rm -rf $(TMP)
+
+$(SFTPBATCH): $(TARBALL).sig
+	@echo progress > $@
+	@echo put $(TARBALL) >> $@
+	@echo chmod 664 $(notdir $(TARBALL)) >> $@
+	@echo put $(TARBALL).sig >> $@
+	@echo chmod 664 $(notdir $(TARBALL)).sig >> $@
+	@echo rm  $(PACKAGE)-latest.tar.bz2 >> $@
+	@echo symlink $(notdir $(TARBALL)) $(PACKAGE)-latest.tar.bz2 >> $@
+	@echo quit >> $@
+
+$(TARBALL).sig: $(TARBALL)
+	@gpg -q -ba --use-agent -o $@ $<
+
+$(TARBALL): $(TMP)/$(PACKAGE)-$(VERSION)
+	@tar --bzip2 --owner=nobody --group=nogroup -cf $@ -C $(TMP) $(PACKAGE)-$(VERSION)
+
+$(TMP)/$(PACKAGE)-$(VERSION): .svn
+	svn export . $@
+	@chmod -R a+r,u+w,og-w $@
+	@find $@ -type d | xargs -r chmod a+rx,u+w,og-w
+endif
