@@ -45,6 +45,7 @@ install: startpar
 check:
 	$(MAKE) -C testsuite $@
 
+distclean: clean
 clean:
 	rm -f startpar makeboot $(OBJS)
 
