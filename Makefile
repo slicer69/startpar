@@ -66,7 +66,7 @@ dist: $(TARBALL) $(TARBALL).sig
 	rm -rf $(TMP)
 
 upload: $(SFTPBATCH)
-	echo @sftp -b $< $(SVLOGIN)@dl.sv.nongnu.org:/releases/$(PROJECT)
+	@sftp -b $< $(SVLOGIN)@dl.sv.nongnu.org:/releases/$(PROJECT)
 	rm -rf $(TMP)
 
 $(SFTPBATCH): $(TARBALL).sig
@@ -75,8 +75,8 @@ $(SFTPBATCH): $(TARBALL).sig
 	@echo chmod 664 $(notdir $(TARBALL)) >> $@
 	@echo put $(TARBALL).sig >> $@
 	@echo chmod 664 $(notdir $(TARBALL)).sig >> $@
-	@echo rm  $(PACKAGE)-latest.tar.bz2 >> $@
-	@echo symlink $(notdir $(TARBALL)) $(PACKAGE)-latest.tar.bz2 >> $@
+#	@echo rm  $(PACKAGE)-latest.tar.bz2 >> $@
+#	@echo symlink $(notdir $(TARBALL)) $(PACKAGE)-latest.tar.bz2 >> $@
 	@echo quit >> $@
 
 $(TARBALL).sig: $(TARBALL)
