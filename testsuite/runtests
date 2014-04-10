@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 mkdir -p etc/init.d
 touch etc/insserv.conf
 cat > etc/init.d/test <<EOF
