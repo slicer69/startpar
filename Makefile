@@ -21,7 +21,10 @@ ifneq ($(INC),)
 endif
 
 CC     = gcc
-CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -Wall -W -pipe
+CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -pipe
+
+WARNINGS = -Wall -W -Wformat -Werror=format-security
+CFLAGS += $(WARNINGS)
 
 # Enable large file support on GNU/Hurd
 CFLAGS += $(shell getconf LFS_CFLAGS)
