@@ -29,16 +29,20 @@ CFLAGS += $(WARNINGS)
 # Enable large file support on GNU/Hurd
 CFLAGS += $(shell getconf LFS_CFLAGS)
 
+CPPFLAGS += $(EXTRACPPFLAGS)
+CFLAGS += $(EXTRACFLAGS)
+LDFLAGS += $(EXTRALDFLAGS)
+
 ifeq ($(MAKECMDGOALS),makeboot)
 CFLAGS += -DTEST
 endif
 
 .c.o:
-	$(CC) $(CFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -c $<
+	$(CC) $(CPPFLAGS) $(CFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -c $<
 
 all: startpar
 startpar: $(OBJS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -o $@ $(OBJS) $(LIBS)
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(LDFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -o $@ $(OBJS) $(LIBS)
 
 makeboot: makeboot.c
 
