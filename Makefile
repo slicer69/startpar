@@ -8,10 +8,11 @@ sbindir		= /sbin
 mandir		= /usr/share/man
 man8dir		= $(mandir)/man8
 
-SRCS		= startpar.c makeboot.c proc.c compiletest.c
+SRCS		= startpar.c makeboot.c proc.c
+CXXSRCS         = compiletest.cc
 HDRS		= makeboot.h proc.h
 REST		= COPYING Makefile startpar.8
-OBJS		= $(SRCS:.c=.o)
+OBJS		= $(SRCS:.c=.o) $(CXXSRCS:.cc=.o)
 
 STARTPAR        := $(shell pwd)/startpar
 

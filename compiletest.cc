@@ -1,4 +1,3 @@
-//#include <cstdio>
 #include <cstring>
 
 int testfunc(void)
