@@ -1,4 +1,6 @@
 VERSION = 0.60
+PACKAGE=startpar
+PROJECT=sysvinit
 #ISSUSE	= -DSUSE
 
 INSTALL		= install -m 755
@@ -15,13 +17,14 @@ REST		= COPYING Makefile startpar.8
 OBJS		= $(SRCS:.c=.o) $(CXXSRCS:.cc=.o)
 
 STARTPAR        := $(shell pwd)/startpar
+TARBALL	        = $(PACKAGE)-$(VERSION).tar.xz
 
 ifneq ($(INC),)
     LIBS	+= -lblogger
     COPTS	+= -DUSE_BLOGD
 endif
 
-CC     = gcc
+CC     ?= gcc
 CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -pipe
 
 WARNINGS = -Wall -W -Wformat -Werror=format-security
@@ -37,6 +40,18 @@ LDFLAGS += $(EXTRALDFLAGS)
 ifeq ($(MAKECMDGOALS),makeboot)
 CFLAGS += -DTEST
 endif
+
+SOURCEFILES= compiletest.cc \
+             COPYING \
+             makeboot.c \
+             makeboot.h \
+             Makefile \
+             proc.c \
+             proc.h \
+             README \
+             startpar.8 \
+             startpar.c
+
 
 .c.o:
 	$(CC) $(CPPFLAGS) $(CFLAGS) -DVERSION=\"$(VERSION)\" $(ISSUSE) -c $<
@@ -56,45 +71,20 @@ check: all
 	$(MAKE) STARTPAR=$(STARTPAR) -C testsuite $@
 
 distclean: clean
+	rm -f $(TARBALL) $(TARBALL).sig
+
 clean:
 	rm -f startpar makeboot $(OBJS)
 
-ifeq ($(MAKECMDGOALS),upload)
-PACKAGE=startpar
-PROJECT=sysvinit
-SVLOGIN=$(shell svn info | sed -rn '/Repository Root:/{ s|.*//(.*)\@.*|\1|p }')
-override TMP:=$(shell mktemp -d $(VERSION).XXXXXXXX)
-override TARBALL:=$(TMP)/$(PACKAGE)-$(VERSION).tar.bz2
-override SFTPBATCH:=$(TMP)/$(VERSION)-sftpbatch
 
-dist: $(TARBALL) $(TARBALL).sig
-	@cp $(TARBALL) .
-	@cp $(TARBALL).sig .
-	@echo "tarball $(PACKAGE)-$(VERSION).tar.bz2 ready"
-	rm -rf $(TMP)
-
-upload: $(SFTPBATCH)
-	@sftp -b $< $(SVLOGIN)@dl.sv.nongnu.org:/releases/$(PROJECT)
-	rm -rf $(TMP)
-
-$(SFTPBATCH): $(TARBALL).sig
-	@echo progress > $@
-	@echo put $(TARBALL) >> $@
-	@echo chmod 664 $(notdir $(TARBALL)) >> $@
-	@echo put $(TARBALL).sig >> $@
-	@echo chmod 664 $(notdir $(TARBALL)).sig >> $@
-#	@echo rm  $(PACKAGE)-latest.tar.bz2 >> $@
-#	@echo symlink $(notdir $(TARBALL)) $(PACKAGE)-latest.tar.bz2 >> $@
-	@echo quit >> $@
+dist: $(TARBALL).sig
 
 $(TARBALL).sig: $(TARBALL)
 	@gpg -q -ba --use-agent -o $@ $<
 
-$(TARBALL): $(TMP)/$(PACKAGE)-$(VERSION)
-	@tar --bzip2 --owner=nobody --group=nogroup -cf $@ -C $(TMP) $(PACKAGE)-$(VERSION)
-
-$(TMP)/$(PACKAGE)-$(VERSION): .svn
-	svn export . $@
-	@chmod -R a+r,u+w,og-w $@
-	@find $@ -type d | xargs -r chmod a+rx,u+w,og-w
-endif
+$(TARBALL): clean
+	mkdir -p startpar/testsuite
+	cp $(SOURCEFILES) startpar/
+	cp testsuite/* startpar/testsuite/
+	@tar --xz --owner=nobody --group=nogroup -cf $(TARBALL) startpar/
+	rm -rf startpar/

@@ -1,6 +1,8 @@
 startpar
 ========
 
+This program starts runlevel scripts (or programs) in parallel. 
+
 The latest version of the source is available from
 http://savannah.nongnu.org/projects/sysvinit
 
