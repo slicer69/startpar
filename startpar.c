@@ -29,6 +29,9 @@
 # undef  USE_PRELOAD
 # define CHECK_FORDEVPTS
 #endif
+#ifdef __FreeBSD__
+#undef CHECK_FORDEVPTS
+#endif
 #include <stdio.h>
 #include <termios.h>
 #include <signal.h>
@@ -39,7 +42,9 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 #include <sys/un.h>
+#ifndef __FreeBSD__
 #include <sys/sysinfo.h>
+#endif
 #include <sys/stat.h>
 #include <sys/mman.h>
 #ifdef CHECK_FORDEVPTS
@@ -76,6 +81,15 @@
 #endif
 #ifndef  attribute
 # define attribute(attr)	__attribute__(attr)
+#endif
+
+#ifdef __FreeBSD__
+# define TEMP_FAILURE_RETRY(expression) \
+  (__extension__                                                              \
+    ({ long int __result;                                                     \
+       do __result = (long int) (expression);                                 \
+       while (__result == -1L && errno == EINTR);                             \
+       __result; }))
 #endif
 
 typedef enum _boolean {false, true} boolean;
@@ -288,8 +302,13 @@ void writebuf(struct prg *p)
 static int checksystem(const int par, const boolean start, const boolean limit)
 {
   const      int pg_size       = sysconf(_SC_PAGESIZE);
+  #ifdef __FreeBSD__
+  const long int minphys_bytes = (2<<21);
+  const long int avphys_pg = 10;
+  #else
   const long int minphys_bytes = (sysconf(_SC_LONG_BIT) > 32L) ? (2<<22) : (2<<21);
   const long int avphys_pg     = sysconf(_SC_AVPHYS_PAGES);
+  #endif
   long int minphys_pg;
   unsigned long int prcs_run, prcs_blked;
   int newpar;
@@ -419,7 +438,9 @@ void run(struct prg *p)
 
   p->len = 0;
   p->pid = (pid_t)0;
+  #ifndef __FreeBSD__
   p->fd = getpt();
+  #endif
   if (p->fd <= 0)
     {
       p->fd = 0;
