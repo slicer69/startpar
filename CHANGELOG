@@ -1,9 +1,16 @@
 startpar 0.61
 ===============
 
-* Applied signal patch from Petter Heinholdtsen which shoudl avoid
+* Applied signal patch from Petter Heinholdtsen which should avoid
   masking SIGINT to services.
   Addresses Debian bug #679630
+* Applied patch from Francis Russell which should greatly speed up
+  make-style dependency checking in startpar (Fracis's test
+  suggest patch causes just 0.25% number of loop/dependency checks
+  compared to original.)
+  This should close Debian bugs which report startpar is bailing
+  out when checking dependencies.
+  Addresses Debian bugs #609959 and #696359.
 
 
 startpar 0.60

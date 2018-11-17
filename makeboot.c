@@ -47,6 +47,8 @@ static int o_flags = O_RDONLY;
 #endif
 #include "makeboot.h"
 
+static int check_loop(struct makenode *dep, struct makenode *src);
+static int check_loop_helper(struct makenode *dep, struct makenode *src);
 
 int tree_entries = 0;
 struct makenode *tree_list = NULL;
@@ -85,6 +87,7 @@ static struct makenode *add_target(const char *name)
 	}
 	memset(node, 0, alignof(struct makenode)+strsize(name));
 	node->name = ((char*)node)+alignof(struct makenode);
+        node->cycle_check_value = -1;
 	strcpy(node->name, name);
 
 	/* append to the list in alphabetical order */
@@ -129,21 +132,27 @@ static struct makelist *new_list(struct makenode *node, struct makelist *next)
 /*
  * check whether the given target would create an infinte loop
  */
-static int loop;
+static int cycle_check_value;
 static int check_loop(struct makenode *dep, struct makenode *src)
 {
+        ++cycle_check_value;
+        return check_loop_helper(dep, src);
+}
+
+static int check_loop_helper(struct makenode *dep, struct makenode *src)
+{
+       if (dep->cycle_check_value == cycle_check_value)
+		return 0;
+       else
+	   dep->cycle_check_value = cycle_check_value;
+
 	struct makelist *s;
 	for (s = dep->depend; s; s = s->next) {
 		if (s->node == src) {
 			fprintf(stderr, "loop exists %s in %s!\n", dep->name, src->name);
 			return 1;
 		}
-		if (loop++ > 99999) {
-			fprintf(stderr, "too many loops! (loop=%d, dep->name=%s, src->name=%s)\n",
-				loop, dep->name, src->name);
-			return 1;
-		}
-		if (check_loop(s->node, src))
+		if (check_loop_helper(s->node, src))
 			return 1;
 	}
 	return 0;
@@ -157,7 +166,6 @@ static void add_depend(struct makenode *node, const char *dst)
 	struct makenode *dep;
 
 	dep = add_target(dst);
-	loop = 0;
 	if (check_loop(dep, node))
 		return;
 	dep->select = new_list(node, dep->select);

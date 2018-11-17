@@ -35,6 +35,7 @@ struct makenode {
 	struct makenode *next;
 	int interactive;
 	int importance;
+        int cycle_check_value;
 	int filter_prefix;
 };
 
