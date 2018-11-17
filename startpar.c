@@ -732,6 +732,7 @@ void detach(struct prg *p, const int store)
 	  (void)sigfillset(&nmask);
 	  sigprocmask(SIG_UNBLOCK, &nmask, NULL);
 
+	  (void)signal(SIGINT,  SIG_DFL);   /* some interactive services may be interruptable */
 	  (void)signal(SIGHUP,  SIG_DFL);
 	  (void)signal(SIGQUIT, SIG_DFL);
 	  (void)signal(SIGSEGV, SIG_DFL);
