@@ -101,7 +101,6 @@ static char *run_mode = NULL;
 static struct makenode **nodevec;
 static sig_atomic_t signaled;
 const char *initddir = "/etc/init.d";
-const char *etcdir = "/etc";
 
 #define PBUF_SIZE	8192
 #define PRUNNING	0x0001
@@ -830,6 +829,7 @@ void usage(int status)
   fprintf(stderr, "       -p parallel tasks\n");
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");
+  fprintf(stderr, "       -f copy stdin to stdout without running any programs\n");
   exit(status);
 }
 
@@ -862,7 +862,7 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
+  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:d:")) != EOF)
     {
       switch(c)
         {
@@ -880,9 +880,6 @@ int main(int argc, char **argv)
 	  break;
 	case 'a':
 	  arg = optarg;
-	  break;
-	case 'e':
-	  etcdir = optarg;
 	  break;
 	case 'd':
 	  initddir = optarg;

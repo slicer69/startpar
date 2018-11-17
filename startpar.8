@@ -51,6 +51,10 @@ startpar \- start runlevel scripts in parallel
 .IR global_timeout ]
 .B \-M [
 .IR boot | start | stop ]
+.br
+.B startpar
+.RB [ -f ]
+.br
 
 .SH DESCRIPTION
 startpar is used to run multiple run\-level scripts in parallel.
@@ -111,6 +115,13 @@ respectively in the directory
 By scanning the boot and runlevel directories in
 .I /etc/init.d/
 it then executes the appropriate scripts in parallel.
+
+The 
+.B \-f
+option causes startpar to copy standard input (stdin) to standard output (stdout)
+until startpar reaches the end of input or the process is killed. When \-f
+is used no programs are started and other parameters on the command line are
+ignored. This option is only kept for legacy purposes.
 
 .SH FILES
 .I /etc/init.d/.depend.boot

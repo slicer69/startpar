@@ -11,6 +11,9 @@ startpar 0.61
   This should close Debian bugs which report startpar is bailing
   out when checking dependencies.
   Addresses Debian bugs #609959 and #696359.
+* Removed undocumented and unused -e flag.
+* Documented -f flag.
+  Should address Debian bug #763703.
 
 
 startpar 0.60
