@@ -30,6 +30,8 @@ startpar \- start runlevel scripts in parallel
 .IR par ]
 .RB [ \-i
 .IR iorate ]
+.RB [ \-e
+.IR etcdir ]
 .RB [ \-t
 .IR timeout ]
 .RB [ \-T
@@ -115,6 +117,12 @@ respectively in the directory
 By scanning the boot and runlevel directories in
 .I /etc/init.d/
 it then executes the appropriate scripts in parallel.
+
+The
+.B \-e
+option allows the user to set the location of the system's etc configuration
+directory. The default is to use /etc. Using \-e we can use alternative locations
+such as /usr/local/etc.
 
 The 
 .B \-f

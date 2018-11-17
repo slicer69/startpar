@@ -101,6 +101,7 @@ static char *run_mode = NULL;
 static struct makenode **nodevec;
 static sig_atomic_t signaled;
 const char *initddir = "/etc/init.d";
+const char *etcdir = "/etc";
 
 #define PBUF_SIZE	8192
 #define PRUNNING	0x0001
@@ -830,6 +831,7 @@ void usage(int status)
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");
   fprintf(stderr, "       -f copy stdin to stdout without running any programs\n");
+  fprintf(stderr, "       -e set the location of etc directory (default is /etc)\n");
   exit(status);
 }
 
@@ -862,7 +864,7 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:d:")) != EOF)
+  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
     {
       switch(c)
         {
@@ -884,6 +886,9 @@ int main(int argc, char **argv)
 	case 'd':
 	  initddir = optarg;
 	  break;
+        case 'e':
+          etcdir = optarg;
+          break;
 	case 'M':
 	  run_mode = optarg;
 	  break;
