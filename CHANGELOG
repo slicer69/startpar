@@ -1,0 +1,17 @@
+startpar 0.61
+===============
+
+* Applied signal patch from Petter Heinholdtsen which shoudl avoid
+  masking SIGINT to services.
+  Addresses Debian bug #679630
+
+
+startpar 0.60
+================
+* Updated manual page with new copyright.
+* Updated Makefile to work with GCC or Clang.
+* Updated Makefile to no longer use SVN, we use git now.
+* Fixed package building and signing in Makefile.
+* Added short description of startpar to README file.
+* Cleaned up unused temp/defines in Makefile.
+
