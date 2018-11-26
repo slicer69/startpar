@@ -1,3 +1,10 @@
+startpar 0.62
+===============
+
+* Fixed typos in startpar.c error messages.
+  Moves Debian patch 99 upstream.
+
+
 startpar 0.61
 ===============
 

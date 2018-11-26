@@ -724,7 +724,7 @@ void detach(struct prg *p, const int store)
 
   if (-1 == fcntl(p->fd, F_SETFL, flags))
     {
-      perror("unable to set FNONBLOCK flag on program file descriptior");
+      perror("unable to set FNONBLOCK flag on program file descriptor");
     }
   while ((r = read(p->fd, p->buf, sizeof(p->buf))))
     {
@@ -743,7 +743,7 @@ void detach(struct prg *p, const int store)
   flags &= ~FNONBLOCK;
   if (-1 == fcntl(p->fd, F_SETFL, flags))
     {
-      perror("unable to unset FNONBLOCK flag on program file descriptior");
+      perror("unable to unset FNONBLOCK flag on program file descriptor");
     }
   if (r == -1 && errno == EWOULDBLOCK)
     {
