@@ -1275,7 +1275,7 @@ int main(int argc, char **argv)
 #if DEBUG
       fprintf(stderr, "active = %d, maxfd = %d, last = %d\n", active, maxfd, last);
 #endif
-      if (active == 1 && last >= 0)
+      if (active == 1 && last >= 0 && num >= argc)
 	{
 	  p = prgs + last;
 	  if ((pid = waitpid(p->pid, &r, (maxfd < 0 ? 0 : WNOHANG)|WUNTRACED)) == 0)
