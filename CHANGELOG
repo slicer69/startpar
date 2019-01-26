@@ -4,6 +4,8 @@ startpar 0.62
 * Fixed typos in startpar.c error messages.
   Moves Debian patch 99 upstream.
 * Applied Debian patches 81_timeout and 83_hardening upstream.
+* Minor code clean-up in makeboot.c to remove duplicate
+  instructions.
 
 startpar 0.61
 ===============

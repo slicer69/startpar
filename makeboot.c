@@ -109,7 +109,7 @@ static struct makenode *add_target(const char *name)
  */
 static void add_importance(struct makenode *node, int importance)
 {
-	struct makelist *s = node->depend;
+	struct makelist *s;
 
 	node->importance += importance;
 	for (s = node->depend; s; s = s->next)
@@ -497,7 +497,7 @@ void print_run_result(int *resvec, struct makenode **nodevec, const char *action
 	int i, r, stop = (! strcmp(action, "stop"));
 
 	printf("failed_service=\"");
-	i = r = 0;
+	r = 0;
 	for (i = 0; i < tree_entries; i++) {
 #if DEBUG
 		if (resvec[i] == 255) {
@@ -531,7 +531,7 @@ void print_run_result(int *resvec, struct makenode **nodevec, const char *action
 	}
 #else  /* !SuSE */
 	printf("skipped_service_not_installed=\"");
-	i = r = 0;
+	r = 0;
 	for (i = 0; i < tree_entries; i++) {
 		if (resvec[i] == 5) {
 			if (r)
@@ -542,7 +542,7 @@ void print_run_result(int *resvec, struct makenode **nodevec, const char *action
 	}
 	printf("\"\n");
 	printf("skipped_service_not_configured=\"");
-	i = r = 0;
+	r = 0;
 	for (i = 0; i < tree_entries; i++) {
 		if (resvec[i] == 6) {
 			if (r)
