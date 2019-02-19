@@ -46,6 +46,7 @@ CFLAGS += -DTEST
 endif
 
 SOURCEFILES= compiletest.cc \
+	     CHANGELOG \
              COPYING \
              makeboot.c \
              makeboot.h \
