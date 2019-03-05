@@ -50,7 +50,7 @@ extern struct makenode *tree_list;
 extern const char *initddir;
 extern const char *etcdir;
 
-extern void parse_makefile(const char *path);
+extern int parse_makefile(const char *path);
 extern void check_run_files(const char *action, const char *prev, const char *run);
 extern struct makenode *pickup_task(void);
 extern void finish_task(struct makenode *n);

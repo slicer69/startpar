@@ -47,6 +47,17 @@ static int o_flags = O_RDONLY;
 #endif
 #include "makeboot.h"
 
+#ifndef LINE_MAX
+#define LINE_MAX 4096
+#endif
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 static int check_loop(struct makenode *dep, struct makenode *src);
 static int check_loop_helper(struct makenode *dep, struct makenode *src);
 
@@ -199,11 +210,13 @@ static void mark_interactive(const char *name)
  * bbb: xxx ddd ...
  *
  * other lines are ignored.
+ * Returns true (non-zero) on success and
+ * returns false (zero) on failure.
  */
-void parse_makefile(const char *path)
+int parse_makefile(const char *path)
 {
 	FILE *fp;
-	char buf[LINE_MAX]; /* FIXME: is this enough big? */
+	char buf[LINE_MAX]; 
 	char *s, *strp, *p;
 	struct makenode *node;
 
@@ -214,7 +227,7 @@ void parse_makefile(const char *path)
 		o_flags |= O_NOATIME;
 	if ((fd = open(path, o_flags)) < 0) {
 		fprintf(stderr, "Can't open %s: %s\n", path, strerror(errno));
-		exit(1);
+		return FALSE;
 	}
 	(void)posix_fadvise(fd, 0, 0, POSIX_FADV_WILLNEED);
 	(void)posix_fadvise(fd, 0, 0, POSIX_FADV_SEQUENTIAL);
@@ -226,7 +239,7 @@ void parse_makefile(const char *path)
 #endif
 	{
 		fprintf(stderr, "Can't open %s: %s\n", path, strerror(errno));
-		exit(1);
+		return FALSE;
 	}
 
 	while (fgets(buf, sizeof(buf), fp)) {
@@ -290,6 +303,7 @@ void parse_makefile(const char *path)
 		if (importance)
 			add_importance(node, importance);
 	}
+        return TRUE;
 }
 
 /*

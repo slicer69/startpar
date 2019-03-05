@@ -117,6 +117,19 @@ static sig_atomic_t signaled;
 const char *initddir = "/etc/init.d";
 const char *etcdir = "/etc";
 
+#define LEGACY_DEPENDENCY_PATH "/etc/init.d/."
+#define DEPENDENCY_PATH "/var/lib/insserv/"
+char *dependency_path = DEPENDENCY_PATH;
+#ifndef PATH_MAX
+#define PATH_MAX 2048
+#endif
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
+
 #define PBUF_SIZE	8192
 #define PRUNNING	0x0001
 #define PFINISHED	0x0002
@@ -572,8 +585,8 @@ void run(struct prg *p)
 
   if (run_mode)
     {
-      char path[128];
-      snprintf(path, sizeof(path), "%s/%s", initddir, p->name);
+      char path[PATH_MAX];
+      snprintf(path, PATH_MAX, "%s/%s", initddir, p->name);
       execlp(path, p->arg0, arg, (char *)0);
     }
   else if (arg)
@@ -616,8 +629,8 @@ int run_single(const char *prg, const char *arg0, int spl)
       closeall();
       if (run_mode)
 	{
-	  char path[128];
-	  snprintf(path, sizeof(path), "%s/%s", initddir, prg);
+	  char path[PATH_MAX];
+	  snprintf(path, PATH_MAX, "%s/%s", initddir, prg);
 	  execlp(path, arg0 ? arg0 : path, arg, (char *)0);
 	}
       else if (arg)
@@ -848,6 +861,8 @@ void usage(int status)
   fprintf(stderr, "       startpar -v\n");
   fprintf(stderr, "           show version number\n");
   fprintf(stderr, "general options:\n");
+  fprintf(stderr, "       -l use legacy /etc/init.d path for Makefile-style scripts\n");
+  fprintf(stderr, "          The default is to use the location /var/lib/insserv\n");
   fprintf(stderr, "       -p parallel tasks\n");
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");
@@ -873,6 +888,8 @@ int main(int argc, char **argv)
   char *run_level = getenv("RUNLEVEL");
   char *splashopt = 0;
   sigset_t nmask, omask, smask;
+  int status;     /* check if parsing makefile worked */
+  int using_legacy_path = FALSE;      /* use new makefile path by default */
 
   detect_consoles();
 
@@ -885,7 +902,7 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
+  while ((c = getopt(argc, argv, "flhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
     {
       switch(c)
         {
@@ -909,6 +926,10 @@ int main(int argc, char **argv)
 	  break;
         case 'e':
           etcdir = optarg;
+          break;
+        case 'l':
+          dependency_path = LEGACY_DEPENDENCY_PATH;
+          using_legacy_path = TRUE;
           break;
 	case 'M':
 	  run_mode = optarg;
@@ -962,7 +983,7 @@ int main(int argc, char **argv)
     }
   if (run_mode)
     {
-      char makefile[64];
+      char makefile[PATH_MAX];
       if (!strcmp(run_mode, "boot"))
 	arg = "start";
       else if (!strcmp(run_mode, "halt"))
@@ -981,8 +1002,22 @@ int main(int argc, char **argv)
 	  fprintf(stderr, "invalid run mode %s\n", run_mode);
 	  exit(1);
 	}
-      snprintf(makefile, sizeof(makefile), "%s/.depend.%s", initddir, run_mode);
-      parse_makefile(makefile);
+      snprintf(makefile, PATH_MAX, "%sdepend.%s", dependency_path, run_mode);
+      status = parse_makefile(makefile);
+      /* If the parse fails it is probably because the file does not
+         exist. Try alternative location. -- Jesse */
+      if ( (! status) && (! using_legacy_path) )
+      {
+         snprintf(makefile, PATH_MAX, "%sdepend.%s", LEGACY_DEPENDENCY_PATH, run_mode);
+         fprintf(stderr, "Trying to find makefile-style script at legacy location: %s\n",
+                         LEGACY_DEPENDENCY_PATH);
+         status = parse_makefile(makefile);
+         if (! status)
+            exit(1);
+      }
+      else if ( (! status) && (using_legacy_path) )
+         exit(1);      /* no other place to try so drop out */
+
       check_run_files(run_mode, prev_level, run_level);
 
       argc = tree_entries;			/* number of handled scripts */
