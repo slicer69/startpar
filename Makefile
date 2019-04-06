@@ -8,12 +8,12 @@ INSTALL_DATA	= install -m 644
 DESTDIR		=
 sbindir		= /sbin
 mandir		= /usr/share/man
-man8dir		= $(mandir)/man8
+man1dir		= $(mandir)/man1
 
 SRCS		= startpar.c makeboot.c proc.c
 CXXSRCS         = compiletest.cc
 HDRS		= makeboot.h proc.h
-REST		= COPYING Makefile startpar.8
+REST		= COPYING Makefile startpar.1
 OBJS		= $(SRCS:.c=.o) $(CXXSRCS:.cc=.o)
 
 STARTPAR        := $(shell pwd)/startpar
@@ -54,7 +54,7 @@ SOURCEFILES= compiletest.cc \
              proc.c \
              proc.h \
              README \
-             startpar.8 \
+             startpar.1 \
              startpar.c
 
 
@@ -68,9 +68,9 @@ startpar: $(OBJS)
 makeboot: makeboot.c
 
 install: startpar
-	$(INSTALL) -d $(DESTDIR)$(sbindir) $(DESTDIR)$(man8dir)
+	$(INSTALL) -d $(DESTDIR)$(sbindir) $(DESTDIR)$(man1dir)
 	$(INSTALL) startpar $(DESTDIR)$(sbindir)/.
-	$(INSTALL_DATA) startpar.8 $(DESTDIR)$(man8dir)/.
+	$(INSTALL_DATA) startpar.1 $(DESTDIR)$(man1dir)/.
 
 check: all
 	$(MAKE) STARTPAR=$(STARTPAR) -C testsuite $@
