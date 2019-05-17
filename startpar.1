@@ -1,0 +1,177 @@
+'\" e
+.\" SuSE man page for startpar
+.\"
+.\" Copyright (c) 2003 SuSE Linux AG, Nuernberg, Germany.
+.\"
+.\" This program is free software; you can redistribute it and/or modify
+.\" it under the terms of the GNU General Public License as published by
+.\" the Free Software Foundation; either version 2, or (at your option)
+.\" any later version.
+.\"
+.\" This program is distributed in the hope that it will be useful,
+.\" but WITHOUT ANY WARRANTY; without even the implied warranty of
+.\" MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+.\" GNU General Public License for more details.
+.\"
+.\" You should have received a copy of the GNU General Public License
+.\" along with this program (see the file COPYING); if not, write to the
+.\" Free Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston,
+.\" MA 02110-1301, USA.
+.\"
+.\" Author: Michael Schroeder <mls@suse.de>
+.\"
+.TH STARTPAR 1 "Mar 2019"
+.SH NAME
+startpar \- start runlevel scripts in parallel
+
+.SH SYNOPSIS
+.B startpar
+.RB [ \-p
+.IR par ]
+.RB [ \-i
+.IR iorate ]
+.RB [ \-e
+.IR etcdir ]
+.RB [ \-t
+.IR timeout ]
+.RB [ \-T
+.IR global_timeout ]
+.RB [ \-a
+.IR arg ]
+.B prg1
+.B prg2
+.B ...
+.br
+.B startpar
+.RB [ \-p
+.IR par ]
+.RB [ \-i
+.IR iorate ]
+.RB [ \-t
+.IR timeout ]
+.RB [ \-T
+.IR global_timeout ]
+.RB [ \-l ]
+.B \-M [
+.IR boot | start | stop ]
+.br
+.B startpar
+.RB [ -f ]
+.br
+.B startpar
+.RB [ -v ]
+.br
+
+.SH DESCRIPTION
+startpar is used to run multiple run\-level scripts in parallel.
+The degree of parallelism on one
+.B CPU
+can be set with the
+.B \-p
+option, the default is full parallelism. An argument to all of
+the scripts can be provided with the
+.B \-a
+option.
+Processes blocked by pending
+.B I/O
+will cause new process creation to be weighted by the iorate factor
+.IR 800 .
+To change this factor the option
+.B \-i
+can be used to specify another value.  The amount
+.EQ
+weight = (nblocked times iorate) / 1000
+.EN
+will be subtracted from the total number of processes which could be
+started, where nblocked is the number of processes currently blocked
+by pending I/O.
+
+The output of each script is buffered and written when the script
+exits, so output lines of different scripts won't mix. You can
+modify this behaviour by setting a timeout.
+
+The timeout set with the
+.B \-t
+option is used as buffer timeout. If the output buffer of a
+script is not empty and the last output was
+.I timeout
+seconds ago, startpar will flush the buffer.
+
+The
+.B \-T
+option timeout works more globally. If no output is printed for
+more than
+.I global_timeout
+seconds, startpar will flush the buffer of the script with
+the oldest output. Afterwards it will only print output of this
+script until it is finished.
+
+The
+.B \-M
+option switches
+.B startpar
+into a
+.BR make (1)
+like behaviour.  This option takes three different arguments:
+.IR boot ", " start ", and " stop
+for reading
+.IR depend.boot " or " depend.start " or " depend.stop
+respectively in the directory
+.IR /var/lib/insserv/ .
+By scanning the boot and runlevel directories in
+.I /etc/init.d/
+it then executes the appropriate scripts in parallel.
+When the \-M flag is used with the \-l flag startpar looks
+for the depend.boot, depend.start, and depend.stop scripts
+in its legacy location of /etc/init.d/ instead of
+/var/lib/insserv/.
+
+Also note that if startpar cannot find its makefile-style
+scripts in /var/lib/insserv/, it will automatically check
+the legacy location as a fallback in case startpar is being
+run on a system that uses the old location.
+
+The
+.B \-e
+option allows the user to set the location of the system's etc configuration
+directory. The default is to use /etc. Using \-e we can use alternative locations
+such as /usr/local/etc.
+
+The 
+.B \-f
+option causes startpar to copy standard input (stdin) to standard output (stdout)
+until startpar reaches the end of input or the process is killed. When \-f
+is used no programs are started and other parameters on the command line are
+ignored. This option is only kept for legacy purposes.
+
+The
+.B \-v
+option tells startpar to print its name and version number. When the
+version flag is used, all other command line parameters are ignored.
+The version number will be printed and startpar then immediately exits.
+
+.SH FILES
+.I /var/lib/insserv/depend.boot
+.br
+.I /var/lib/insserv/depend.start
+.br
+.I /var/lib/insserv/depend.stop
+
+.SH SEE ALSO
+.BR init.d (7),
+.BR insserv (8),
+.BR startproc (8).
+
+.SH COPYRIGHT
+2003,2004 SuSE Linux AG, Nuernberg, Germany.
+.br
+2007 SuSE LINUX Products GmbH, Nuernberg, Germany.
+.br
+2019 Jesse Smith
+
+.SH AUTHOR
+Michael Schroeder <mls@suse.de>
+.br
+Takashi Iwai <tiwai@suse.de>
+.br
+Werner Fink <werner@suse.de>
