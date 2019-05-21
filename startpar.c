@@ -118,7 +118,7 @@ const char *initddir = "/etc/init.d";
 const char *etcdir = "/etc";
 
 #define LEGACY_DEPENDENCY_PATH "/etc/init.d/."
-#define DEPENDENCY_PATH "/var/lib/insserv/"
+#define DEPENDENCY_PATH "/lib/insserv/"
 char *dependency_path = DEPENDENCY_PATH;
 #ifndef PATH_MAX
 #define PATH_MAX 2048
@@ -862,7 +862,7 @@ void usage(int status)
   fprintf(stderr, "           show version number\n");
   fprintf(stderr, "general options:\n");
   fprintf(stderr, "       -l use legacy /etc/init.d path for Makefile-style scripts\n");
-  fprintf(stderr, "          The default is to use the location /var/lib/insserv\n");
+  fprintf(stderr, "          The default is to use the location /lib/insserv\n");
   fprintf(stderr, "       -p parallel tasks\n");
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");

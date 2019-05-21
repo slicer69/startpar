@@ -117,17 +117,17 @@ like behaviour.  This option takes three different arguments:
 for reading
 .IR depend.boot " or " depend.start " or " depend.stop
 respectively in the directory
-.IR /var/lib/insserv/ .
+.IR /lib/insserv/ .
 By scanning the boot and runlevel directories in
 .I /etc/init.d/
 it then executes the appropriate scripts in parallel.
 When the \-M flag is used with the \-l flag startpar looks
 for the depend.boot, depend.start, and depend.stop scripts
 in its legacy location of /etc/init.d/ instead of
-/var/lib/insserv/.
+/lib/insserv/.
 
 Also note that if startpar cannot find its makefile-style
-scripts in /var/lib/insserv/, it will automatically check
+scripts in /lib/insserv/, it will automatically check
 the legacy location as a fallback in case startpar is being
 run on a system that uses the old location.
 
@@ -151,11 +151,11 @@ version flag is used, all other command line parameters are ignored.
 The version number will be printed and startpar then immediately exits.
 
 .SH FILES
-.I /var/lib/insserv/depend.boot
+.I /lib/insserv/depend.boot
 .br
-.I /var/lib/insserv/depend.start
+.I /lib/insserv/depend.start
 .br
-.I /var/lib/insserv/depend.stop
+.I /lib/insserv/depend.stop
 
 .SH SEE ALSO
 .BR init.d (7),
