@@ -21,7 +21,10 @@ startpar 0.63
 
 * Switched manual page location for startpar from
   section 8 (admin tools) to 1 (general system tools)
-  since it can be used by anyone.  
+  since it can be used by anyone.
+
+* Move startpar install location from /sbin to /bin since it can
+be used by regular users for some tasks. 
 
 
 startpar 0.62

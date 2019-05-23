@@ -6,7 +6,7 @@ PROJECT=sysvinit
 INSTALL		= install -m 755
 INSTALL_DATA	= install -m 644
 DESTDIR		=
-sbindir		= /sbin
+sbindir		= /bin
 mandir		= /usr/share/man
 man1dir		= $(mandir)/man1
 
