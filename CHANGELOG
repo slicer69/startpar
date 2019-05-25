@@ -1,16 +1,6 @@
 startpar 0.63
 ===============
 
-* startpar now looks for Makefile-style dependency scripts in
-  /lib/insserv/ by default. If no scripts are found there
-  it will fall back to using the legacy /etc/init.d/ location.
-  If no scripts are found there, startpar will print an error
-  and exit.
-
-* Added -l flag to modify -M. When -l is used, startpar skips looking
-  in the /lib/insserv/ directory for Makefile-style scripts. The
-  -l flag jumps straight to looking in the /etc/init.d/ directory.
-
 * Used constants for some strings instead of checking sizeof().
 
 * Made makefile parsing more fault talerant so the parsing function

@@ -51,7 +51,6 @@ startpar \- start runlevel scripts in parallel
 .IR timeout ]
 .RB [ \-T
 .IR global_timeout ]
-.RB [ \-l ]
 .B \-M [
 .IR boot | start | stop ]
 .br
@@ -115,21 +114,12 @@ into a
 like behaviour.  This option takes three different arguments:
 .IR boot ", " start ", and " stop
 for reading
-.IR depend.boot " or " depend.start " or " depend.stop
+.IR .depend.boot " or " .depend.start " or " .depend.stop
 respectively in the directory
-.IR /lib/insserv/ .
+.IR /etc/init.d/ .
 By scanning the boot and runlevel directories in
 .I /etc/init.d/
 it then executes the appropriate scripts in parallel.
-When the \-M flag is used with the \-l flag startpar looks
-for the depend.boot, depend.start, and depend.stop scripts
-in its legacy location of /etc/init.d/ instead of
-/lib/insserv/.
-
-Also note that if startpar cannot find its makefile-style
-scripts in /lib/insserv/, it will automatically check
-the legacy location as a fallback in case startpar is being
-run on a system that uses the old location.
 
 The
 .B \-e
@@ -151,11 +141,11 @@ version flag is used, all other command line parameters are ignored.
 The version number will be printed and startpar then immediately exits.
 
 .SH FILES
-.I /lib/insserv/depend.boot
+.I /etc/init.d/.depend.boot
 .br
-.I /lib/insserv/depend.start
+.I /etc/init.d/.depend.start
 .br
-.I /lib/insserv/depend.stop
+.I /etc/init.d/.depend.stop
 
 .SH SEE ALSO
 .BR init.d (7),

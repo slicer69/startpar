@@ -118,8 +118,8 @@ const char *initddir = "/etc/init.d";
 const char *etcdir = "/etc";
 
 #define LEGACY_DEPENDENCY_PATH "/etc/init.d/."
-#define DEPENDENCY_PATH "/lib/insserv/"
-char *dependency_path = DEPENDENCY_PATH;
+/* #define DEPENDENCY_PATH "/lib/insserv/" */
+char *dependency_path = LEGACY_DEPENDENCY_PATH;
 #ifndef PATH_MAX
 #define PATH_MAX 2048
 #endif
@@ -861,8 +861,10 @@ void usage(int status)
   fprintf(stderr, "       startpar -v\n");
   fprintf(stderr, "           show version number\n");
   fprintf(stderr, "general options:\n");
+  /*
   fprintf(stderr, "       -l use legacy /etc/init.d path for Makefile-style scripts\n");
   fprintf(stderr, "          The default is to use the location /lib/insserv\n");
+  */
   fprintf(stderr, "       -p parallel tasks\n");
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");
@@ -902,7 +904,7 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "flhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
+  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
     {
       switch(c)
         {
@@ -927,10 +929,12 @@ int main(int argc, char **argv)
         case 'e':
           etcdir = optarg;
           break;
+        /*
         case 'l':
           dependency_path = LEGACY_DEPENDENCY_PATH;
           using_legacy_path = TRUE;
           break;
+        */
 	case 'M':
 	  run_mode = optarg;
 	  break;
