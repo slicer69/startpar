@@ -25,7 +25,7 @@
 #include <sys/types.h>
 #ifndef __FreeBSD__
 #include <sys/sysmacros.h>
-#endf
+#endif
 #include <sys/stat.h>
 #include <termios.h>
 #include <fcntl.h>
@@ -164,7 +164,7 @@ void detect_consoles(void)
 	if (!dir)
 	    goto out;
 	while ((fscanf(fc, "%*s %*s (%[^)]) %d:%d", &fbuf[0], &maj, &min) == 3)) {
-	    struct console *restrict tail;
+	    struct console *restrict tail = NULL;
 	    char * name;
 
 	    if (!strchr(fbuf, 'E'))
@@ -176,7 +176,10 @@ void detect_consoles(void)
 		continue;
 
 	    if (posix_memalign((void*)&tail, sizeof(void*), alignof(typeof(struct console))) != 0)
-		perror("memory allocation");
+            {
+		perror("memory allocation in detect_consoles");
+                exit(1);
+            }
 
 	    tail->next = (struct console*)0;
 	    tail->tty = name;

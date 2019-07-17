@@ -6,6 +6,8 @@ startpar 0.64
 
 * Fixed typos in manual page. Patches provided by Dmitry Bogatov.
 
+* Make sure we do not try to use unallocated memory when detecting consoles.
+
 
 startpar 0.63
 ===============
