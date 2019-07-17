@@ -1,3 +1,12 @@
+startpar 0.64
+===============
+
+* Added sys/sysmacros.h header on non-FreeBSD systems to
+  make it possible to use makedev().
+
+* Fixed typos in manual page. Patches provided by Dmitry Bogatov.
+
+
 startpar 0.63
 ===============
 

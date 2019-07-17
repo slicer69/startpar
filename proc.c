@@ -23,6 +23,9 @@
 #include <stdlib.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+#ifndef __FreeBSD__
+#include <sys/sysmacros.h>
+#endf
 #include <sys/stat.h>
 #include <termios.h>
 #include <fcntl.h>

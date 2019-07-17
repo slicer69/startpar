@@ -117,7 +117,7 @@ for reading
 .IR .depend.boot " or " .depend.start " or " .depend.stop
 respectively in the directory
 .IR /etc/init.d/ .
-By scanning the boot and runlevel directories in
+By scanning the boot and runlevel scripts in
 .I /etc/init.d/
 it then executes the appropriate scripts in parallel.
 
@@ -148,9 +148,9 @@ The version number will be printed and startpar then immediately exits.
 .I /etc/init.d/.depend.stop
 
 .SH SEE ALSO
-.BR init.d (7),
+.BR init (8),
 .BR insserv (8),
-.BR startproc (8).
+.BR startproc (8)
 
 .SH COPYRIGHT
 2003,2004 SuSE Linux AG, Nuernberg, Germany.
