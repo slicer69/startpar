@@ -8,6 +8,11 @@ startpar 0.64
 
 * Make sure we do not try to use unallocated memory when detecting consoles.
 
+* Fixed handing of overriding location of init.d on the command line.
+
+* Fixed testsuite script to give better results to tests. Numbered
+  tests so mixed "success" and "failure" messages would be more clear.
+  
 
 startpar 0.63
 ===============

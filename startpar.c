@@ -117,9 +117,6 @@ static sig_atomic_t signaled;
 const char *initddir = "/etc/init.d";
 const char *etcdir = "/etc";
 
-#define LEGACY_DEPENDENCY_PATH "/etc/init.d/."
-/* #define DEPENDENCY_PATH "/lib/insserv/" */
-char *dependency_path = LEGACY_DEPENDENCY_PATH;
 #ifndef PATH_MAX
 #define PATH_MAX 2048
 #endif
@@ -891,7 +888,6 @@ int main(int argc, char **argv)
   char *splashopt = 0;
   sigset_t nmask, omask, smask;
   int status;     /* check if parsing makefile worked */
-  int using_legacy_path = FALSE;      /* use new makefile path by default */
 
   detect_consoles();
 
@@ -929,12 +925,6 @@ int main(int argc, char **argv)
         case 'e':
           etcdir = optarg;
           break;
-        /*
-        case 'l':
-          dependency_path = LEGACY_DEPENDENCY_PATH;
-          using_legacy_path = TRUE;
-          break;
-        */
 	case 'M':
 	  run_mode = optarg;
 	  break;
@@ -1006,21 +996,14 @@ int main(int argc, char **argv)
 	  fprintf(stderr, "invalid run mode %s\n", run_mode);
 	  exit(1);
 	}
-      snprintf(makefile, PATH_MAX, "%sdepend.%s", dependency_path, run_mode);
+      snprintf(makefile, PATH_MAX, "%s/.depend.%s", initddir, run_mode);
       status = parse_makefile(makefile);
-      /* If the parse fails it is probably because the file does not
-         exist. Try alternative location. -- Jesse */
-      if ( (! status) && (! using_legacy_path) )
+      if (! status) 
       {
-         snprintf(makefile, PATH_MAX, "%sdepend.%s", LEGACY_DEPENDENCY_PATH, run_mode);
-         fprintf(stderr, "Trying to find makefile-style script at legacy location: %s\n",
-                         LEGACY_DEPENDENCY_PATH);
-         status = parse_makefile(makefile);
-         if (! status)
-            exit(1);
-      }
-      else if ( (! status) && (using_legacy_path) )
+         fprintf(stderr, "Unable to run scripts using dependency information in %s\n",
+                 initddir);
          exit(1);      /* no other place to try so drop out */
+      }
 
       check_run_files(run_mode, prev_level, run_level);
 

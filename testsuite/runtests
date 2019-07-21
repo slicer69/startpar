@@ -5,39 +5,29 @@ set -e
 if [ -z "$STARTPAR" ] ; then
     STARTPAR=../startpar
 fi
+if [ -z "$INSSERV" ] ; then
+    INSSERV=/sbin/insserv
+fi
 
 mkdir -p etc/init.d
 touch etc/insserv.conf
-cat > etc/init.d/test <<EOF
-#!/bin/sh
-set -e
-### BEGIN INIT INFO
-# Provides:          test
-# Required-Start:    $all
-# Required-Stop:     $remote_fs
-# Default-Start:     2 3 4 5
-# Default-Stop:      0 1 6
-# Short-Description: init script for stopping readahead profiling
-### END INIT INFO
-
-echo success: the test script is running $1
-EOF
+cp testscript etc/init.d/test
 chmod a+rx etc/init.d/test
 
-/sbin/insserv -p etc/init.d test
+"$INSSERV" -p etc/init.d test
 if $STARTPAR -d etc/init.d -e etc -P S -R 2 -M start 2>&1 | grep -q 'is running' ; then
-    echo success: the test init.d script was running
+    echo Test 1 success: the test script in init.d was running
 else
-    echo error: the test init.d was not running
+    echo Test 1 error: the test script in init.d was not running
 fi
 
 rm -rf etc
 
-
 mkdir -p start
 touch start/working
 if $STARTPAR -a start ls 2>&1 | grep -q working ; then
-    echo success: the ls command was running
+    echo Test 2 success: the ls command was running
 else
-    echo error: the ls command was not running
-fi ; rm -rf start
+    echo Test 2 error: the ls command was not running
+fi ; 
+rm -rf start
