@@ -12,7 +12,8 @@ startpar 0.64
 
 * Fixed testsuite script to give better results to tests. Numbered
   tests so mixed "success" and "failure" messages would be more clear.
-  
+
+* Updated testsuite to work with insserv 1.20.0.  
 
 startpar 0.63
 ===============

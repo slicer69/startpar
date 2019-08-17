@@ -14,7 +14,7 @@ touch etc/insserv.conf
 cp testscript etc/init.d/test
 chmod a+rx etc/init.d/test
 
-"$INSSERV" -p etc/init.d test
+"$INSSERV" -p etc/init.d -i etc/init.d test
 if $STARTPAR -d etc/init.d -e etc -P S -R 2 -M start 2>&1 | grep -q 'is running' ; then
     echo Test 1 success: the test script in init.d was running
 else
