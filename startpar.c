@@ -117,6 +117,8 @@ static sig_atomic_t signaled;
 const char *initddir = "/etc/init.d";
 const char *etcdir = "/etc";
 
+#define WRITE_TO_FD 2
+
 #ifndef PATH_MAX
 #define PATH_MAX 2048
 #endif
@@ -293,9 +295,12 @@ void writebuf(struct prg *p)
   char *b = p->buf;
   int r;
 
+  #ifdef DEBUG
+  fprintf(stderr, "About to write buf\n");
+  #endif
   while (p->len > 0)
     {
-      r = write(2, b, p->len);
+      r = write(WRITE_TO_FD, b, p->len);
       if (r < 0)
 	{
 	  if (errno == EINTR)
@@ -357,7 +362,6 @@ static int checksystem(const int par, const boolean start, const boolean limit)
 
 #if DEBUG
   fprintf(stderr, "checksystem par=%d newpar=%d (prcs_run=%lu) %ld\n", par, newpar, prcs_run, time(0));
-  dump_status();
 #endif
   if (newpar <= 0)
     return 1;
@@ -418,15 +422,24 @@ static int checkdevpts(void)
 
   if (ptsfd == -1)
     {
+      #ifdef DEBUG
+      fprintf(stderr, "No PT found\n");
+      #endif
       return 0;
     }
   else if (ptsname(ptsfd) == 0 || grantpt(ptsfd) || unlockpt(ptsfd))
     {
+      #ifdef DEBUG
+      fprintf(stderr, "Error getting PT\n");
+      #endif
       close(ptsfd);
       return 0;
     }
   else
     {
+      #ifdef DEBUG
+      fprintf(stderr, "PT found\n");
+      #endif
       close(ptsfd);
       return 1;
     }
@@ -599,6 +612,10 @@ int run_single(const char *prg, const char *arg0, int spl)
   pid_t pid;
   int r;
 
+  #ifdef DEBUG
+  fprintf(stderr, "Running interactive, single task.\n");
+  #endif
+
   if ((pid = fork()) == (pid_t)-1)
     {
       perror("fork");
@@ -684,10 +701,10 @@ static size_t gtimo_buflen;
 void storebuf(struct prg *p)
 {
   if ((gtimo_buflen + p->len) > gtimo_bufsize)
-    {
+  {
       writebuf(p);				/* In case of overflow or memory shortage */
       return;
-    }
+  }
 
   (void)memcpy(gtimo_buf + gtimo_buflen, p->buf, p->len);
   gtimo_buflen += p->len;
@@ -703,9 +720,12 @@ void flushbuf(void)
   if (!buf)
 	return;					/* In case of memory shortage */
 
+  #ifdef DEBUG
+  fprintf(stderr, "About to flush buf\n");
+  #endif
   while (len > 0)
     {
-      int r = write(2, buf, len);
+      int r = write(WRITE_TO_FD, buf, len);
       if (r < 0)
 	{
 	  perror("write");
@@ -786,7 +806,7 @@ void detach(struct prg *p, const int store)
   p->fd = 0;
 }
 
-static struct prg *interactive_task;
+static struct prg *interactive_task = NULL;
 static volatile int active;
 static void sigchld(int sig attribute((unused)))
 {
@@ -940,17 +960,15 @@ int main(int argc, char **argv)
 	case 'v':
 	  printf("startpar version %s\n", VERSION);
 	  exit(0);
-	case 'h':
-	  usage(0);
-	  break;
 	case 'i':
 	  iorate = atof(optarg);
 	  if (iorate < 0.0)
 	    iorate = 800.0;
 	  break;
+	case 'h':
+	  usage(0);     /* usage does not return, no need for break */
 	default:
 	  usage(1);
-	  break;
         }
     }
   if (forw)
@@ -1018,7 +1036,7 @@ int main(int argc, char **argv)
       if (par > argc)				/* not more than the number of all scripts */
 	par = argc;
 
-      inpar = par;				/* the original argument of parallel procs per cpu */
+      inpar = par;			/* the original argument of parallel procs per cpu */
 
       par = checkpar(inpar, isstart);		/* the number of parallel procs on all cpu's */
 
@@ -1062,11 +1080,19 @@ int main(int argc, char **argv)
 	{
 	  if ((*nodevec = pickup_task()))
 	  {
+            #ifdef DEBUG
+            fprintf(stderr, "About to run single task in run mode %s\n", run_mode);
+            #endif
 	    *resvec = run_single((*nodevec)->name, (*nodevec)->arg0, calcsplash(0, 1, splashopt));
 	    finish_task(*nodevec);
 	  }
       } else
-	*resvec = run_single(*argv, *argv, calcsplash(0, 1, splashopt));
+        {
+            #ifdef DEBUG
+            fprintf(stderr, "About to run single task with no devec\n");
+            #endif
+	   *resvec = run_single(*argv, *argv, calcsplash(0, 1, splashopt));
+        }
       goto finished;
     }
 
@@ -1167,7 +1193,7 @@ int main(int argc, char **argv)
   for (;;)
     {
 #ifdef CHECK_FORDEVPTS
-      int devpts = 0;
+      int devpts = TRUE;
 #endif
       int maxfd = -1;
       int last = -1;
@@ -1227,10 +1253,20 @@ int main(int argc, char **argv)
 		  p->num = num++;
 #ifdef CHECK_FORDEVPTS
 		  if (!devpts)
-		    interactive_task = p;	/* no /dev/pts, treat as interactive */
+                  {
+                      #ifdef DEBUG
+                      fprintf(stderr, "No devpts. Setting interactive.\n");
+                      #endif
+		      interactive_task = p;	/* no /dev/pts, treat as interactive */
+                  }
 #endif
 		  if (notty)
+                  {
+                    #ifdef DEBUG
+                    fprintf(stderr, "No tty available. Set as interactive.\n");
+                    #endif
 		    interactive_task = p;	/* no tty, treat as interactive */
+                  }
 		  if (interactive_task)
 		    continue;			/* don't start this here */
 		  run(p);
@@ -1277,6 +1313,9 @@ int main(int argc, char **argv)
 	    {
 	      p = interactive_task;
 	      p->flags |= PRUNNING;
+              #ifdef DEBUG
+              fprintf(stderr, "About to run single, interactive task, active zero.\n");
+              #endif
 	      resvec[p->num] = run_single(p->name, p->arg0, p->splashadd);
 	      if (run_mode)
 		finish_task(nodevec[p->num]);
@@ -1376,7 +1415,12 @@ int main(int argc, char **argv)
 
 #ifdef CHECK_FORDEVPTS
 	  if (!devpts)
-	    devpts = checkdevpts();
+          {
+	      devpts = checkdevpts();
+              #ifdef DEBUG
+              fprintf(stderr, "Check for devpts returned %d\n", devpts);
+              #endif
+          }
 #endif
 	  continue;		/* start new processes */
 	}

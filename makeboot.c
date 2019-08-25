@@ -569,17 +569,6 @@ void print_run_result(int *resvec, struct makenode **nodevec, const char *action
 	printf("\"\n");
 }
 
-#if DEBUG
-void dump_status(void)
-{
-	struct makenode *node;
-
-	for (node = tree_list; node; node = node->next)
-		fprintf(stderr, "XXX %s: status = %d, dep = %d, int = %d, imp = %d\n",
-			node->name, node->status, node->num_deps, node->interactive, node->importance);
-}
-#endif
-
 #ifdef TEST
 void *xcalloc(size_t nmemb, size_t size)
 {
