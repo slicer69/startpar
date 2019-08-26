@@ -18,6 +18,9 @@ startpar 0.64
 * Fixed regression which could cause jobs to run in serial (interactive
   mode) instead of parallel when devpts check failed. 
   Should greatly increase performance on affected systems.
+
+* Added -n flag which will prefix output from running jobs with the
+  name of the executable being run.
  
 
 startpar 0.63

@@ -149,6 +149,7 @@ struct prg {
 static struct prg *prgs;
 static int inpar, par;
 static double iorate = 800.0;
+int print_program_name = FALSE;
 
 #ifdef USE_PRELOAD
 static volatile enum { Unknown, Preload, NoPreload } ispreload = Unknown;
@@ -298,6 +299,18 @@ void writebuf(struct prg *p)
   #ifdef DEBUG
   fprintf(stderr, "About to write buf\n");
   #endif
+  if ( (print_program_name) && (p->name) && (p->len > 0) )
+  { 
+     char *temp_name;
+     int status;
+
+     status = asprintf(&temp_name, "%s: ", p->name);
+     if (status >= 0)
+     {
+        write(WRITE_TO_FD, temp_name, status);
+        free(temp_name);
+     }
+  }
   while (p->len > 0)
     {
       r = write(WRITE_TO_FD, b, p->len);
@@ -712,7 +725,7 @@ void storebuf(struct prg *p)
   glastio = now;
 }
 
-void flushbuf(void)
+void flushbuf(struct prg *p)
 {
   size_t len = gtimo_buflen;
   char * buf = gtimo_buf;
@@ -723,6 +736,17 @@ void flushbuf(void)
   #ifdef DEBUG
   fprintf(stderr, "About to flush buf\n");
   #endif
+  if ( (print_program_name) && (len > 0) && (p->name) )
+  {
+      char *temp_name;
+      int status;
+      status = asprintf(&temp_name, "%s: ", p->name);
+      if (status >= 0)
+      {
+          write(WRITE_TO_FD, temp_name, status);
+          free(temp_name);
+      }
+  }
   while (len > 0)
     {
       int r = write(WRITE_TO_FD, buf, len);
@@ -882,6 +906,7 @@ void usage(int status)
   fprintf(stderr, "       -l use legacy /etc/init.d path for Makefile-style scripts\n");
   fprintf(stderr, "          The default is to use the location /lib/insserv\n");
   */
+  fprintf(stderr, "       -n prefix output with name of program displaying output\n");
   fprintf(stderr, "       -p parallel tasks\n");
   fprintf(stderr, "       -t I/O timeout\n");
   fprintf(stderr, "       -T global I/O timeout\n");
@@ -920,10 +945,13 @@ int main(int argc, char **argv)
   numcpu = sysconf(_SC_NPROCESSORS_ONLN);
   myname = argv[0];
 
-  while ((c = getopt(argc, argv, "fhp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
+  while ((c = getopt(argc, argv, "fhnp:t:T:a:M:P:R:S:vi:e:d:")) != EOF)
     {
       switch(c)
         {
+        case 'n':
+          print_program_name = TRUE;
+          break;
 	case 'p':
 	  par = atoi(optarg);
 	  break;
@@ -1193,7 +1221,7 @@ int main(int argc, char **argv)
   for (;;)
     {
 #ifdef CHECK_FORDEVPTS
-      int devpts = TRUE;
+      int devpts = checkdevpts();
 #endif
       int maxfd = -1;
       int last = -1;
@@ -1395,7 +1423,7 @@ int main(int argc, char **argv)
 		{
 		  writebuf(p);
 		  if (p->fd) detach(p, GTIMO_OFFL);
-		  flushbuf();
+		  flushbuf(p);
 		  gtimo_running = 0;
 		}
 	      else if (gtimo_running)
