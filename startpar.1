@@ -32,6 +32,7 @@ startpar \- start runlevel scripts in parallel
 .IR iorate ]
 .RB [ \-e
 .IR etcdir ]
+.RB [ \-n ]
 .RB [ \-t
 .IR timeout ]
 .RB [ \-T
@@ -47,6 +48,7 @@ startpar \- start runlevel scripts in parallel
 .IR par ]
 .RB [ \-i
 .IR iorate ]
+.RB [ \-n ]
 .RB [ \-t
 .IR timeout ]
 .RB [ \-T
@@ -104,6 +106,11 @@ more than
 seconds, startpar will flush the buffer of the script with
 the oldest output. Afterwards it will only print output of this
 script until it is finished.
+
+When the 
+.B \-n
+flag is used, output from a running job is prefixed with the name
+of the program or script being run.
 
 The
 .B \-M
