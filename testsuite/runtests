@@ -9,16 +9,19 @@ if [ -z "$INSSERV" ] ; then
     INSSERV=/sbin/insserv
 fi
 
+status=0
+
 mkdir -p etc/init.d
 touch etc/insserv.conf
 cp testscript etc/init.d/test
 chmod a+rx etc/init.d/test
 
-"$INSSERV" -p etc/init.d -i etc/init.d test
+"$INSSERV" -p etc/init.d -i etc/init.d test || exit 1
 if $STARTPAR -d etc/init.d -e etc -P S -R 2 -M start 2>&1 | grep -q 'is running' ; then
     echo Test 1 success: the test script in init.d was running
 else
     echo Test 1 error: the test script in init.d was not running
+    status=2
 fi
 
 rm -rf etc
@@ -29,5 +32,8 @@ if $STARTPAR -a start ls 2>&1 | grep -q working ; then
     echo Test 2 success: the ls command was running
 else
     echo Test 2 error: the ls command was not running
+    status=3
 fi ; 
 rm -rf start
+
+exit $status

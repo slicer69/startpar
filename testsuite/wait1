@@ -1,0 +1,13 @@
+#!/bin/bash
+
+echo one
+sleep 1
+echo two
+sleep 1
+echo three
+sleep 1
+echo four
+sleep 1
+echo five
+sleep 5
+
