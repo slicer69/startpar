@@ -21,7 +21,9 @@ startpar 0.64
 
 * Added -n flag which will prefix output from running jobs with the
   name of the executable being run.
- 
+
+* Added optimization flag to startpar (-O2). Can
+  be overridden by passing "OPT" variable to Makefile. 
 
 startpar 0.63
 ===============

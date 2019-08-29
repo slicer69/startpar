@@ -15,6 +15,7 @@ CXXSRCS         = compiletest.cc
 HDRS		= makeboot.h proc.h
 REST		= COPYING Makefile startpar.1
 OBJS		= $(SRCS:.c=.o) $(CXXSRCS:.cc=.o)
+OPT		?= -O2
 
 STARTPAR        := $(shell pwd)/startpar
 TARBALL	        = $(PACKAGE)-$(VERSION).tar.xz
@@ -25,7 +26,7 @@ ifneq ($(INC),)
 endif
 
 CC     ?= gcc
-CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -pipe 
+CFLAGS = $(RPM_OPT_FLAGS) $(COPTS) -D_GNU_SOURCE $(INC) -pipe $(OPT)
 
 WARNINGS = -Wall -W -Wformat -Werror=format-security
 CFLAGS += $(WARNINGS)
