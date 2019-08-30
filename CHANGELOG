@@ -25,6 +25,8 @@ startpar 0.64
 * Added optimization flag to startpar (-O2). Can
   be overridden by passing "OPT" variable to Makefile. 
 
+* Made sure output lines from parallel jobs end with a newline character.
+
 startpar 0.63
 ===============
 

@@ -315,12 +315,18 @@ void writebuf(struct prg *p)
     {
       r = write(WRITE_TO_FD, b, p->len);
       if (r < 0)
-	{
+      {
 	  if (errno == EINTR)
 	    continue;
 	  perror("write");
 	  r = p->len;
-	}
+      }
+      else
+      {
+          /* make sure we finish output with a newline */
+          if (b[p->len - 1] != '\n')
+             write(WRITE_TO_FD, "\n", 2);
+      }
       p->len -= r;
       b += r;
     }
@@ -751,10 +757,16 @@ void flushbuf(struct prg *p)
     {
       int r = write(WRITE_TO_FD, buf, len);
       if (r < 0)
-	{
+      {
 	  perror("write");
 	  r = len;
-	}
+      }
+      else
+      {
+         /* make sure we finish output with a newline */
+         if (buf[len - 1] != '\n')
+            write(WRITE_TO_FD, "\n", 2);
+      }
       len -= r;
       buf += r;
     }
