@@ -6,8 +6,9 @@ PROJECT=sysvinit
 INSTALL		= install -m 755
 INSTALL_DATA	= install -m 644
 DESTDIR		=
-sbindir		= /bin
-mandir		= /usr/share/man
+PREFIX		?= /usr
+sbindir		= $(PREFIX)/bin
+mandir		= $(PREFIX)/share/man
 man1dir		= $(mandir)/man1
 
 SRCS		= startpar.c makeboot.c proc.c
@@ -70,11 +71,11 @@ makeboot: makeboot.c
 
 install: startpar
 	$(INSTALL) -d $(DESTDIR)$(sbindir) $(DESTDIR)$(man1dir)
-	$(INSTALL) startpar $(DESTDIR)$(sbindir)/.
-	$(INSTALL_DATA) startpar.1 $(DESTDIR)$(man1dir)/.
+	$(INSTALL) startpar $(DESTDIR)$(sbindir)/
+	$(INSTALL_DATA) startpar.1 $(DESTDIR)$(man1dir)/
 
 check: all
-	$(MAKE) STARTPAR=$(STARTPAR) -C testsuite $@
+	$(MAKE) STARTPAR=$(STARTPAR) PREFIX=$(PREFIX) -C testsuite $@
 
 distclean: clean
 	rm -f $(TARBALL) $(TARBALL).sig

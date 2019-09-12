@@ -6,7 +6,11 @@ if [ -z "$STARTPAR" ] ; then
     STARTPAR=../startpar
 fi
 if [ -z "$INSSERV" ] ; then
-    INSSERV=/sbin/insserv
+    INSSERV="$PREFIX"/sbin/insserv
+    # If insserv is not in new location, check old location
+    if [ ! -x "$INSSERV" ] ; then
+       INSSERV=/sbin/insserv
+    fi
 fi
 
 status=0
