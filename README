@@ -3,7 +3,9 @@ startpar
 
 This program starts runlevel scripts (or programs) in parallel. 
 
-The latest version of the source is available from
-http://savannah.nongnu.org/projects/sysvinit
+The program can be built and installed on most systems that have
+a build environment (compiler and make support) by running
 
-Please submit patches and bug reports there.
+     make
+     make install
+

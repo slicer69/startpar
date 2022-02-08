@@ -1006,7 +1006,8 @@ int main(int argc, char **argv)
 	    iorate = 800.0;
 	  break;
 	case 'h':
-	  usage(0);     /* usage does not return, no need for break */
+	  usage(0);   /* usage does not return, no need for break.It makes the compiler happy */
+          break;
 	default:
 	  usage(1);
         }
