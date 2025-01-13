@@ -57,11 +57,10 @@ startpar \- start runlevel scripts in parallel
 .IR boot | start | stop ]
 .br
 .B startpar
-.RB [ -f ]
+.RB [ \-f ]
 .br
 .B startpar
-.RB [ -v ]
-.br
+.RB [ \-v ]
 
 .SH DESCRIPTION
 startpar is used to run multiple run\-level scripts in parallel.
@@ -69,8 +68,9 @@ The degree of parallelism on one
 .B CPU
 can be set with the
 .B \-p
-option, the default is full parallelism. An argument to all of
-the scripts can be provided with the
+option,
+the default is full parallelism.
+An argument to all of the scripts can be provided with the
 .B \-a
 option.
 Processes blocked by pending
@@ -83,34 +83,41 @@ can be used to specify another value.  The amount
 .EQ
 weight = (nblocked times iorate) / 1000
 .EN
-will be subtracted from the total number of processes which could be
-started, where nblocked is the number of processes currently blocked
+will be subtracted from the total number of processes
+which could be started,
+where nblocked is the number of processes currently blocked
 by pending I/O.
 
-The output of each script is buffered and written when the script
-exits, so output lines of different scripts won't mix. You can
-modify this behaviour by setting a timeout.
+The output of each script is buffered
+and written
+when the script exits,
+so output lines of different scripts won't mix.
+You can modify this behaviour by setting a timeout.
 
 The timeout set with the
 .B \-t
-option is used as buffer timeout. If the output buffer of a
-script is not empty and the last output was
+option is used as buffer timeout.
+If the output buffer of a script is not empty
+and the last output was
 .I timeout
-seconds ago, startpar will flush the buffer.
+seconds ago,
+startpar will flush the buffer.
 
 The
 .B \-T
-option timeout works more globally. If no output is printed for
-more than
+option timeout works more globally.
+If no output is printed for more than
 .I global_timeout
-seconds, startpar will flush the buffer of the script with
-the oldest output. Afterwards it will only print output of this
-script until it is finished.
+seconds,
+startpar will flush the buffer of the script with the oldest output.
+Afterwards it will only print output of this script
+until it is finished.
 
-When the 
+When the
 .B \-n
-flag is used, output from a running job is prefixed with the name
-of the program or script being run.
+flag is used,
+output from a running job is prefixed with the name of the program
+or script being run.
 
 The
 .B \-M
@@ -118,7 +125,8 @@ option switches
 .B startpar
 into a
 .BR make (1)
-like behaviour.  This option takes three different arguments:
+like behaviour.
+This option takes three different arguments:
 .IR boot ", " start ", and " stop
 for reading
 .IR .depend.boot " or " .depend.start " or " .depend.stop
@@ -131,20 +139,30 @@ it then executes the appropriate scripts in parallel.
 The
 .B \-e
 option allows the user to set the location of the system's etc configuration
-directory. The default is to use /etc. Using \-e we can use alternative locations
+directory.
+The default is to use /etc.
+Using \-e
+we can use alternative locations
 such as /usr/local/etc.
 
-The 
+The
 .B \-f
-option causes startpar to copy standard input (stdin) to standard output (stdout)
-until startpar reaches the end of input or the process is killed. When \-f
-is used no programs are started and other parameters on the command line are
-ignored. This option is only kept for legacy purposes.
+option causes startpar to copy standard input
+(stdin)
+to standard output
+(stdout)
+until startpar reaches the end of input
+or the process is killed.
+When \-f is used
+no programs are started
+and other parameters on the command line are ignored.
+This option is only kept for legacy purposes.
 
 The
 .B \-v
-option tells startpar to print its name and version number. When the
-version flag is used, all other command line parameters are ignored.
+option tells startpar to print its name and version number.
+When the version flag is used,
+all other command line parameters are ignored.
 The version number will be printed and startpar then immediately exits.
 
 .SH FILES
