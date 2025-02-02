@@ -1,4 +1,4 @@
-VERSION = 0.65
+VERSION = 0.66
 PACKAGE=startpar
 PROJECT=sysvinit
 #ISSUSE	= -DSUSE
